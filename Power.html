@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EE315 Power System Analysis Portal</title>
+    <style>
+        :root {
+            --primary: #1e3a8a;
+            --accent: #2563eb;
+            --bg: #f8fafc;
+            --card-bg: #ffffff;
+            --text-dark: #0f172a;
+            --text-muted: #64748b;
+            --border: #cbd5e1;
+            --highlight: #dbeafe;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg);
+            color: var(--text-dark);
+            margin: 0;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: var(--card-bg);
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+        }
+
+        header {
+            text-align: center;
+            border-bottom: 2px solid var(--border);
+            padding-bottom: 15px;
+            margin-bottom: 25px;
+        }
+
+        h1 {
+            color: var(--primary);
+            margin: 0 0 5px 0;
+            font-size: 1.8rem;
+        }
+
+        .subtitle {
+            color: var(--text-muted);
+            margin: 0;
+            font-size: 0.95rem;
+        }
+
+        .mode-toggle {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .mode-btn {
+            background: #e2e8f0;
+            color: var(--text-dark);
+            border: 1px solid var(--border);
+            padding: 10px 20px;
+            border-radius: 6px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .mode-btn.active {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        @media (max-width: 768px) {
+            .grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .card {
+            background: #f1f5f9;
+            padding: 20px;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+        }
+
+        .card h3 {
+            margin-top: 0;
+            color: var(--primary);
+            font-size: 1.1rem;
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 8px;
+        }
+
+        .form-group {
+            margin-bottom: 12px;
+        }
+
+        label {
+            display: block;
+            font-weight: 600;
+            font-size: 0.85rem;
+            margin-bottom: 4px;
+        }
+
+        input {
+            width: 100%;
+            padding: 8px 10px;
+            border: 1px solid var(--border);
+            border-radius: 5px;
+            box-sizing: border-box;
+            font-size: 0.95rem;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: var(--accent);
+            box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.2);
+        }
+
+        .submit-btn {
+            width: 100%;
+            background: var(--accent);
+            color: white;
+            border: none;
+            padding: 12px;
+            border-radius: 6px;
+            font-weight: bold;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: background 0.2s;
+            margin-top: 20px;
+        }
+
+        .submit-btn:hover {
+            background: #1d4ed8;
+        }
+
+        .results {
+            margin-top: 30px;
+            display: none;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+
+        th, td {
+            border: 1px solid var(--border);
+            padding: 10px 12px;
+            text-align: left;
+            font-size: 0.95rem;
+        }
+
+        th {
+            background: #e2e8f0;
+            color: var(--text-dark);
+            font-weight: 600;
+        }
+
+        .highlight-row {
+            background-color: var(--highlight);
+            font-weight: bold;
+        }
+
+        .explanation {
+            background: #fffbe0;
+            border-left: 4px solid #f59e0b;
+            padding: 12px 15px;
+            margin-top: 20px;
+            border-radius: 0 6px 6px 0;
+            font-size: 0.9rem;
+            line-height: 1.4;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <header>
+        <h1>Power System Analysis Portal</h1>
+        <p class="subtitle">EE315 Project / Assignment - 1 | IIT Indore</p>
+    </header>
+
+    <!-- Mode Toggle -->
+    <div class="mode-toggle">
+        <button id="btnGroupMode" class="mode-btn active" onclick="switchMode('group')">Group Auto-Fill Mode</button>
+        <button id="btnManualMode" class="mode-btn" onclick="switchMode('manual')">Custom Manual Input Mode</button>
+    </div>
+
+    <div class="grid">
+        <!-- Section 1: Group & Member Info -->
+        <div class="card" id="groupSection">
+            <h3>Group & Member Information</h3>
+            <div class="form-group">
+                <label for="group">Group Number (XX):</label>
+                <input type="number" id="group" value="8" min="1" max="99" oninput="autoFillParameters()">
+            </div>
+            <div class="form-group">
+                <label for="member">Member Number (Y):</label>
+                <input type="number" id="member" value="3" min="1" max="20" oninput="autoFillParameters()">
+            </div>
+        </div>
+
+        <!-- Section 2: System Parameters -->
+        <div class="card" id="paramSection">
+            <h3>System Parameters</h3>
+            <div class="form-group">
+                <label for="pmax">Max Demand P (MW):</label>
+                <input type="number" id="pmax" step="any">
+            </div>
+            <div class="form-group">
+                <label for="lf">Load Factor x (%):</label>
+                <input type="number" id="lf" step="any">
+            </div>
+            <div class="form-group">
+                <label for="c1">Plant 1 Fixed Cost C1 (Rs/kW/yr):</label>
+                <input type="number" id="c1" step="any">
+            </div>
+            <div class="form-group">
+                <label for="r1">Plant 1 Operating Cost R1 (p/kWh):</label>
+                <input type="number" id="r1" step="any">
+            </div>
+            <div class="form-group">
+                <label for="c2">Plant 2 Fixed Cost C2 (Rs/kW/yr):</label>
+                <input type="number" id="c2" step="any">
+            </div>
+            <div class="form-group">
+                <label for="r2">Plant 2 Operating Cost R2 (p/kWh):</label>
+                <input type="number" id="r2" step="any">
+            </div>
+        </div>
+    </div>
+
+    <button type="button" class="submit-btn" onclick="runOptimization()">Determine Operating Hours</button>
+
+    <!-- Results Section -->
+    <div id="results" class="results">
+        <h3>Assignment Deliverables</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>Parameter</th>
+                    <th>Result</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr class="highlight-row">
+                    <td>Base Load Plant</td>
+                    <td id="resBasePlant"></td>
+                </tr>
+                <tr class="highlight-row">
+                    <td>Peak Load Plant</td>
+                    <td id="resPeakPlant"></td>
+                </tr>
+                <tr class="highlight-row">
+                    <td>Total Operating Hours for Peak Plant (t)</td>
+                    <td id="resHours"></td>
+                </tr>
+            </tbody>
+        </table>
+
+        <div id="explanationBox" class="explanation" style="display: none;"></div>
+    </div>
+</div>
+
+<script>
+    let currentMode = 'group';
+
+    function switchMode(mode) {
+        currentMode = mode;
+        const groupSection = document.getElementById('groupSection');
+        const btnGroup = document.getElementById('btnGroupMode');
+        const btnManual = document.getElementById('btnManualMode');
+
+        if (mode === 'group') {
+            groupSection.style.display = 'block';
+            btnGroup.classList.add('active');
+            btnManual.classList.remove('active');
+            autoFillParameters();
+        } else {
+            groupSection.style.display = 'none';
+            btnManual.classList.add('active');
+            btnGroup.classList.remove('active');
+            clearInputs();
+        }
+    }
+
+    function clearInputs() {
+        document.getElementById('pmax').value = '';
+        document.getElementById('lf').value = '';
+        document.getElementById('c1').value = '';
+        document.getElementById('r1').value = '';
+        document.getElementById('c2').value = '';
+        document.getElementById('r2').value = '';
+        document.getElementById('results').style.display = 'none';
+    }
+
+    function autoFillParameters() {
+        if (currentMode !== 'group') return;
+
+        const grp = parseInt(document.getElementById('group').value) || 0;
+        const mem = parseInt(document.getElementById('member').value) || 0;
+
+        const xx = grp < 10 ? '0' + grp : '' + grp;
+        const zzVal = Math.abs(grp - 10);
+        const zz = zzVal < 10 ? '0' + zzVal : '' + zzVal;
+
+        const k = Math.abs(9 - mem);
+        const j = Math.abs(17 - mem);
+
+        document.getElementById('pmax').value = 500 + grp;
+        document.getElementById('lf').value = 50 + mem;
+        document.getElementById('c1').value = parseInt(mem + xx);
+        document.getElementById('r1').value = mem;
+        document.getElementById('c2').value = parseInt(k + zz);
+        document.getElementById('r2').value = j;
+    }
+
+    function runOptimization() {
+        const C1 = parseFloat(document.getElementById('c1').value);
+        const R1 = parseFloat(document.getElementById('r1').value) / 100.0; // convert paisa to Rupees
+        const C2 = parseFloat(document.getElementById('c2').value);
+        const R2 = parseFloat(document.getElementById('r2').value) / 100.0; // convert paisa to Rupees
+
+        if (isNaN(C1) || isNaN(R1) || isNaN(C2) || isNaN(R2)) {
+            alert("Please fill in all plant cost fields with valid numerical values.");
+            return;
+        }
+
+        let basePlant, peakPlant, C_base, R_base, C_peak, R_peak;
+
+        // Base plant has lower operating cost
+        if (R1 <= R2) {
+            basePlant = "Plant 1";
+            peakPlant = "Plant 2";
+            C_base = C1; R_base = R1;
+            C_peak = C2; R_peak = R2;
+        } else {
+            basePlant = "Plant 2";
+            peakPlant = "Plant 1";
+            C_base = C2; R_base = R2;
+            C_peak = C1; R_peak = R1;
+        }
+
+        // Crossover operating hours formula: t = (C_base - C_peak) / (R_peak - R_base)
+        const t = (C_base - C_peak) / (R_peak - R_base);
+
+        let peakHoursDisplay;
+        let explanationText = "";
+
+        if (t <= 0) {
+            peakHoursDisplay = "0 hours per year";
+            explanationText = `<strong>Economic Analysis:</strong> The mathematical equation gives t = ${t.toFixed(2)} hours. Since t ≤ 0, ${basePlant} has both lower fixed costs and lower operating costs than ${peakPlant}. Thus, ${basePlant} strictly dominates across all operating hours, making the total operating duration for ${peakPlant} equal to <strong>0 hours</strong>.`;
+        } else if (t >= 8760) {
+            peakHoursDisplay = "8760 hours per year";
+            explanationText = `<strong>Economic Analysis:</strong> The calculated value exceeds 8760 hours, meaning ${peakPlant} is cheaper across the entire year.`;
+        } else {
+            peakHoursDisplay = t.toFixed(2) + " hours per year";
+            explanationText = `<strong>Economic Analysis:</strong> The equal marginal cost crossover occurs at t = ${t.toFixed(2)} hours. ${peakPlant} operates for any duration below this threshold.`;
+        }
+
+        document.getElementById('resBasePlant').innerText = basePlant;
+        document.getElementById('resPeakPlant').innerText = peakPlant;
+        document.getElementById('resHours').innerText = peakHoursDisplay;
+
+        const expBox = document.getElementById('explanationBox');
+        expBox.innerHTML = explanationText;
+        expBox.style.display = 'block';
+
+        document.getElementById('results').style.display = 'block';
+    }
+
+    // Initialize default mode on load
+    window.onload = function() {
+        switchMode('group');
+    };
+</script>
+
+</body>
+</html>
