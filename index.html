@@ -249,7 +249,7 @@
 
     <!-- Results Section -->
     <div id="results" class="results">
-        <h3>Assignment Deliverables</h3>
+        <h3>Results</h3>
         <table>
             <thead>
                 <tr>
@@ -370,7 +370,7 @@
             explanationText = `<strong>Economic Analysis:</strong> The calculated value exceeds 8760 hours, meaning ${peakPlant} is cheaper across the entire year.`;
         } else {
             peakHoursDisplay = t.toFixed(2) + " hours per year";
-            explanationText = `<strong>Economic Analysis:</strong> The equal marginal cost crossover occurs at t = ${t.toFixed(2)} hours. ${peakPlant} operates for any duration below this threshold.`;
+            explanationText = `<strong>Minimum Cost Analysis:</strong> At t = ${t.toFixed(2)} hours, the cost of running either plant is identical. To keep total system expenses at a minimum, ${peakPlant} should only be operated for short peak durations under ${t.toFixed(2)} hours per year.`;
         }
 
         document.getElementById('resBasePlant').innerText = basePlant;
